@@ -3,15 +3,15 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 const DEFAULT_TIMEOUT = 30000;
 const DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
 
-// Cache HTML en mémoire
+// Cache HTML in memory
 interface CacheEntry {
   html: string;
   timestamp: number;
 }
 
 const htmlCache = new Map<string, CacheEntry>();
-const CACHE_TTL = 3 * 24 * 60 * 60 * 1000; // 3 jours
-const TELEGRAM_CACHE_TTL = 60 * 60 * 1000; // 1 heure pour t.me
+const CACHE_TTL = 3 * 24 * 60 * 60 * 1000; // 3 days
+const TELEGRAM_CACHE_TTL = 60 * 60 * 1000; // 1 hour for t.me
 
 function getCacheTTL(url: string): number {
   // Short TTL for Telegram URLs (site URLs can change)
@@ -42,7 +42,7 @@ function setCachedHtml(url: string, html: string): void {
   console.log(`[Cache] Stored ${url} (${html.length} chars)`);
 }
 
-// Nettoie le cache périodiquement (toutes les 10 minutes)
+// Clean cache periodically (every 10 minutes)
 setInterval(() => {
   const now = Date.now();
   let cleaned = 0;
@@ -79,7 +79,7 @@ async function fetchDirect(url: string, configOpts?: AxiosRequestConfig): Promis
 }
 
 export async function fetchHtml(url: string, configOpts?: AxiosRequestConfig): Promise<string> {
-  // Vérifie le cache d'abord
+  // Check cache first
   const cached = getCachedHtml(url);
   if (cached) {
     return cached;

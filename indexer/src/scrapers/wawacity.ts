@@ -8,7 +8,7 @@ import { config } from '../config.js';
 
 type WawaContentType = 'films' | 'series' | 'mangas' | 'ebooks';
 
-// Mapping pour le paramètre de recherche
+// Mapping for search parameter
 const CONTENT_TYPE_MAP: Record<string, WawaContentType> = {
   movie: 'films',
   series: 'series',
@@ -16,7 +16,7 @@ const CONTENT_TYPE_MAP: Record<string, WawaContentType> = {
   ebook: 'ebooks',
 };
 
-// Sélecteurs pour les résultats de recherche
+// Selectors for search results
 const RESULT_SELECTORS: Record<string, string> = {
   movie: 'a[href^="?p=film&id="]',
   series: 'a[href^="?p=serie&id="]',
@@ -76,8 +76,8 @@ export class WawacityScraper implements BaseScraper {
 
     const wawaType = CONTENT_TYPE_MAP[contentType];
 
-    // Si un IMDB ID est fourni, récupère les titres depuis l'API IMDB
-    // Sinon utilise la requête originale
+    // If an IMDB ID is provided, fetch titles from the IMDB API
+    // Otherwise use the original query
     let searchQueries: string[];
     if (params.imdbid) {
       console.log(`[WawaCity] IMDB ID provided: ${params.imdbid}`);
@@ -94,11 +94,11 @@ export class WawacityScraper implements BaseScraper {
     console.log(`[WawaCity] Search queries for "${params.q || params.imdbid}":`, searchQueries);
 
     try {
-      // Collecte tous les résultats de recherche pour toutes les variantes
+      // Collect all search results for all variants
       const allSearchResults: SearchResult[] = [];
       const seenPageUrls = new Set<string>();
 
-      // Recherche pour chaque query (en parallèle)
+      // Search for each query (in parallel)
       const queryPromises = searchQueries.map(async (query) => {
         let searchTerm = query;
         if (params.season) {
@@ -106,8 +106,8 @@ export class WawacityScraper implements BaseScraper {
         }
 
 
-        // WawaCity limite: max 32 caractères (espaces inclus)
-        // Si la limite est dépassée, la liste complète des films est renvoyée au lieu des résultats de recherche
+        // WawaCity limit: max 32 characters (spaces included)
+        // If the limit is exceeded, the complete list of films is returned instead of search results
         if (searchTerm.length > 32) {
           searchTerm = searchTerm.substring(0, 32).trim();
           console.log(`[WawaCity] Truncated search term to 32 chars: "${searchTerm}"`);
@@ -126,7 +126,7 @@ export class WawacityScraper implements BaseScraper {
 
       const queryResults = await Promise.all(queryPromises);
 
-      // Déduplique par URL de page de détail
+      // Deduplicate by detail page URL
       for (const results of queryResults) {
         for (const result of results) {
           if (!seenPageUrls.has(result.pageUrl)) {
@@ -142,10 +142,10 @@ export class WawacityScraper implements BaseScraper {
         return [];
       }
 
-      // Pour chaque résultat, visite la page et récupère les liens de téléchargement
+      // For each result, visit the page and retrieve the download links
       const allResults: ScraperResult[] = [];
 
-      // Limite à 10 résultats pour éviter trop de requêtes
+      // Limit to 10 results to avoid too many requests
       const pagesToVisit = allSearchResults.slice(0, 10);
 
       for (const result of pagesToVisit) {
@@ -179,7 +179,7 @@ export class WawacityScraper implements BaseScraper {
         const results = this.parseSearchResults(html, contentType, params, validationQuery);
         allResults.push(...results);
 
-        // Vérifie s'il y a une page suivante
+        // Check if there is a next page
         const $ = cheerio.load(html);
         const hasNextPage = $('ul.pagination li:not(.disabled) a[rel="next"]').length > 0;
 
@@ -204,7 +204,7 @@ export class WawacityScraper implements BaseScraper {
 
     console.log(`[WawaCity] Parsing search results for ${contentType} (validating against "${validationQuery}")`);
 
-    // Parse les blocs .wa-sub-block.wa-post-detail-item
+    // Parse the .wa-sub-block.wa-post-detail-item blocks
     $('.wa-sub-block.wa-post-detail-item').each((_, block) => {
       try {
         const $block = $(block);
@@ -212,19 +212,19 @@ export class WawacityScraper implements BaseScraper {
 
         if ($titleLink.length === 0) return;
 
-        // Récupère le HTML du lien pour extraire le nom sans les tags <i>
+        // Get the HTML of the link to extract the name without <i> tags
         const titleHtml = $titleLink.html() || '';
         const title = $titleLink.text().trim();
         const href = $titleLink.attr('href') || '';
 
         if (!title || !href) return;
 
-        // Extrait le nom et la saison depuis le titre (selon le type de contenu)
+        // Extract the name and season from the title (depending on content type)
         const { name, season: extractedSeason } = extractName(titleHtml, contentType);
 
         console.log(`[WawaCity] Parsed title: "${title}" -> name="${name}", season=${extractedSeason}`);
 
-        // Vérifie que le nom correspond à la recherche (Levenshtein, adapté au type de contenu)
+        // Check that the name matches the search (Levenshtein, adapted to content type)
         if (validationQuery && name) {
           if (!isNameMatch(validationQuery, name, contentType, '[WawaCity]')) {
             console.log(`[WawaCity] Skipping "${name}" - too different from "${validationQuery}"`);
@@ -232,7 +232,7 @@ export class WawacityScraper implements BaseScraper {
           }
         }
 
-        // Si on cherche une saison spécifique, vérifie que la saison correspond
+        // If searching for a specific season, check that the season matches
         if (params.season && contentType === 'series') {
           const seasonNum = parseInt(params.season, 10);
           if (extractedSeason !== undefined && extractedSeason !== seasonNum) {
@@ -241,7 +241,7 @@ export class WawacityScraper implements BaseScraper {
           }
         }
 
-        // Construit le lien complet
+        // Build the complete link
         const pageUrl = href.startsWith('http') ? href : `${this.baseUrl}/${href}`;
 
         const quality = parseQuality(title);
@@ -261,8 +261,8 @@ export class WawacityScraper implements BaseScraper {
       }
     });
 
-    // Fallback: utilise les anciens sélecteurs si aucun résultat
-    // @deprecated : doit être supprimé
+    // Fallback: use old selectors if no results
+    // @deprecated: should be removed
     if (false && results.length === 0) {
       const selector = RESULT_SELECTORS[contentType];
       $(selector).each((_, element) => {
@@ -274,17 +274,17 @@ export class WawacityScraper implements BaseScraper {
 
           if (!title || !href) return;
 
-          // Extrait le nom et la saison (selon le type de contenu)
+          // Extract the name and season (depending on content type)
           const { name, season: extractedSeason } = extractName(titleHtml, contentType);
 
-          // Vérifie que le nom correspond (Levenshtein, adapté au type de contenu)
+          // Check that the name matches (Levenshtein, adapted to content type)
           if (validationQuery && name) {
             if (!isNameMatch(validationQuery, name, contentType, '[WawaCity]')) {
               return;
             }
           }
 
-          // Si on cherche une saison spécifique, vérifie
+          // If searching for a specific season, check
           if (params.season && contentType === 'series') {
             const seasonNum = parseInt(params.season, 10);
             if (extractedSeason !== undefined && extractedSeason !== seasonNum) {
@@ -321,7 +321,7 @@ export class WawacityScraper implements BaseScraper {
     const $ = cheerio.load(html);
     const results: ScraperResult[] = [];
 
-    // Extrait l'année et le titre original depuis .wa-block-body .detail-list li
+    // Extract the year and original title from .wa-block-body .detail-list li
     let pageYear: string | undefined;
     let originalTitle: string | undefined;
 
@@ -346,14 +346,14 @@ export class WawacityScraper implements BaseScraper {
       }
     });
 
-    // Vérifie si le titre original correspond mieux à la recherche
+    // Check if the original title matches the search better
     if (params.q && originalTitle) {
       if (isNameMatch(params.q, originalTitle, contentType, '[WawaCity]')) {
         console.log(`[WawaCity] Original title "${originalTitle}" matches search query "${params.q}"`);
       }
     }
 
-    // Extrait l'IMDb ID depuis les liens ou le texte (tt1234567)
+    // Extract the IMDb ID from links or text (tt1234567)
     let imdbId: string | undefined;
     const imdbMatch = html.match(/imdb\.com\/title\/(tt\d{7,8})/i) || html.match(/\b(tt\d{7,8})\b/);
     if (imdbMatch) {
@@ -361,7 +361,7 @@ export class WawacityScraper implements BaseScraper {
       console.log(`[WawaCity] Found IMDb ID: ${imdbId}`);
     }
 
-    // Filtre par année si le paramètre est fourni et l'année est trouvée dans la page
+    // Filter by year if the parameter is provided and the year is found on the page
     if (params.year && pageYear) {
       if (pageYear !== params.year) {
         console.log(`[WawaCity] Skipping "${searchResult.title}" - year ${pageYear} != ${params.year}`);
@@ -372,7 +372,7 @@ export class WawacityScraper implements BaseScraper {
       console.log(`[WawaCity] Year filter requested (${params.year}) but no year found on page - not filtering`);
     }
 
-    // Parse le tableau #DDLLinkѕ (avec le ѕ cyrillique)
+    // Parse the #DDLLinkѕ table (with Cyrillic ѕ)
     const $table = $('#DDLLinkѕ, #DDLLinks');
 
     if ($table.length === 0) {
@@ -380,25 +380,25 @@ export class WawacityScraper implements BaseScraper {
       return results;
     }
 
-    // Variable pour tracker l'épisode courant (pour les séries)
+    // Variable to track the current episode (for series)
     let currentEpisode: number | undefined;
 
     $table.find('tr').each((_, row) => {
       const $row = $(row);
 
-      // Vérifie si c'est un titre d'épisode (tr.title.episode-title)
+      // Check if it's an episode title (tr.title.episode-title)
       if ($row.hasClass('title') && $row.hasClass('episode-title')) {
         const episodeText = $row.text();
-        // Extrait le numéro d'épisode depuis "Épisode X" ou "Episode X"
+        // Extract the episode number from "Épisode X" or "Episode X"
         const episodeMatch = episodeText.match(/[ÉE]pisode\s*(\d+)/i);
         if (episodeMatch) {
           currentEpisode = parseInt(episodeMatch[1], 10);
           console.log(`[WawaCity] Found episode header: Episode ${currentEpisode}`);
         }
-        return; // Passe à la ligne suivante
+        return; // Move to the next line
       }
 
-      // Vérifie si c'est une ligne de lien (tr.link-row)
+      // Check if it's a link row (tr.link-row)
       if (!$row.hasClass('link-row')) {
         return;
       }
@@ -406,7 +406,7 @@ export class WawacityScraper implements BaseScraper {
       const cells = $row.find('td');
       if (cells.length < 3) return;
 
-      // Colonne 1: lien
+      // Column 1: link
       const $linkCell = $(cells[0]);
       const $link = $linkCell.find('a').first();
       const downloadLink = $link.attr('href');
@@ -416,17 +416,17 @@ export class WawacityScraper implements BaseScraper {
         return;
       }
 
-      // Colonne 2: hébergeur
+      // Column 2: hoster
       const hoster = $(cells[1]).text().trim();
       const hosterLower = hoster.toLowerCase();
 
-      // Skip les liens "Anonyme" (pub)
+      // Skip "Anonyme" links (ads)
       if (hosterLower === 'anonyme') {
         console.error(`[WawaCity] "Anonyme" hoster skipped`);
         return;
       }
 
-      // Filtre par hébergeur si spécifié dans les params
+      // Filter by hoster if specified in params
       if (params.hoster) {
         const allowedHosters = params.hoster.toLowerCase().split(',').map(h => h.trim());
         if (!allowedHosters.some(allowed => hosterLower.includes(allowed) || allowed.includes(hosterLower))) {
@@ -436,33 +436,33 @@ export class WawacityScraper implements BaseScraper {
         console.log(`[WawaCity] Accepted hoster "${hoster}" - in allowed list: ${params.hoster}`);
       }
 
-      // Colonne 3: taille
+      // Column 3: size
       const sizeText = $(cells[2]).text().trim();
       const size = parseSize(sizeText);
 
-      // Pour les séries, utilise l'épisode courant
-      // Pour les films, currentEpisode sera undefined
+      // For series, use the current episode
+      // For movies, currentEpisode will be undefined
       const episode = currentEpisode;
 
-      // Filtre par épisode si spécifié dans les params
+      // Filter by episode if specified in params
       if (params.ep && episode !== undefined && episode !== parseInt(params.ep, 10)) {
         return;
       }
 
-      // Extrait qualité et langue du titre du résultat de recherche
+      // Extract quality and language from search result title
       const quality = searchResult.quality || parseQuality(searchResult.title);
       const language = searchResult.language || parseLanguage(searchResult.title);
 
-      // Construit le titre au format parsable par Radarr/Sonarr
-      // Films: Titre.Année.Qualité.Language.Hoster
-      // Séries: Titre.S01E05.Qualité.Language.Hoster
-      // Nettoie le nom: enlève les crochets [xxx], les tirets et leur contenu, et les espaces multiples
+      // Build the title in a format parsable by Radarr/Sonarr
+      // Movies: Title.Year.Quality.Language.Hoster
+      // Series: Title.S01E05.Quality.Language.Hoster
+      // Clean the name: remove brackets [xxx], dashes and their content, and multiple spaces
       const baseName = searchResult.title
         .split(' - ')[0]
-        .replace(/\[.*?\]/g, '')  // Enlève [HDLIGHT 1080p] etc.
-        .replace(/\s+/g, ' ')     // Normalise les espaces
+        .replace(/\[.*?\]/g, '')  // Remove [HDLIGHT 1080p] etc.
+        .replace(/\s+/g, ' ')     // Normalize spaces
         .trim()
-        .replace(/\s+/g, '.');    // Remplace les espaces par des points
+        .replace(/\s+/g, '.');    // Replace spaces with dots
       const parts: string[] = [baseName];
 
       if (contentType === 'movie' && pageYear) {

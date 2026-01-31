@@ -31,7 +31,7 @@ export function parseQuality(title: string): string | undefined {
   for (const pattern of qualityPatterns) {
     const match = title.match(pattern);
     if (match) {
-      // Normalise: enlève les espaces et met en majuscules
+      // Normalize: remove spaces and capitalize
       return match[1].replace(/\s+/g, '.').toUpperCase();
     }
   }
@@ -41,23 +41,23 @@ export function parseQuality(title: string): string | undefined {
 export function parseLanguage(title: string): string | undefined {
   const languages: string[] = [];
 
-  // Détecte MULTI
+  // Detect MULTI
   if (/\b(MULTI)\b/i.test(title)) {
     languages.push('MULTI');
   }
 
-  // Détecte la langue française spécifique
+  // Detect specific French language
   const frenchMatch = title.match(/\b(TRUEFRENCH|VFQ|VFF|VFI|VF2|FRENCH)\b/i);
   if (frenchMatch) {
     languages.push(frenchMatch[1].toUpperCase());
   }
 
-  // Détecte VOSTFR
+  // Detect VOSTFR
   if (/\b(VOSTFR|SUBFRENCH)\b/i.test(title)) {
     languages.push('VOSTFR');
   }
 
-  // Détecte English si pas de français
+  // Detect English if no French
   if (languages.length === 0 && /\b(ENGLISH|ENG)\b/i.test(title)) {
     languages.push('English');
   }
@@ -109,7 +109,7 @@ export function contentTypeToCategory(contentType: ContentType, quality?: string
   }
 
   if (contentType === 'ebook') {
-    return 7020; // BooksEBook par défaut
+    return 7020; // BooksEBook by default
   }
 
   const isHD = quality && /1080p|720p|HD|FHD|HDLight/i.test(quality);

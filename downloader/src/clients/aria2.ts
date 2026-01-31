@@ -84,7 +84,7 @@ export class Aria2Client implements DownloadClient {
       const options: Record<string, string> = {};
 
       if (filename) {
-        // Extraire l'extension de l'URL si le nom de fichier n'en possède pas
+        // Extract extension from URL if filename doesn't have one
         const hasExtension = /\.[a-zA-Z0-9]{2,4}$/.test(filename);
         if (!hasExtension) {
           const urlMatch = url.match(/\.([a-zA-Z0-9]{2,4})(?:\?|$)/);

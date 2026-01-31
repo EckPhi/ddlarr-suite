@@ -4,32 +4,32 @@ import { isDlprotectServiceConfigured } from '../config.js';
 const APP_CONFIGS = {
   radarr: {
     name: 'Radarr',
-    description: 'Films',
+    description: 'Movies',
     categories: [
-      { id: 2000, name: 'Films' },
-      { id: 2040, name: 'Films HD' },
-      { id: 2045, name: 'Films 4K' },
+      { id: 2000, name: 'Movies' },
+      { id: 2040, name: 'HD Movies' },
+      { id: 2045, name: '4K Movies' },
     ],
   },
   sonarr: {
     name: 'Sonarr',
-    description: 'Séries',
+    description: 'TV Series',
     categories: [
-      { id: 5000, name: 'Séries' },
-      { id: 5040, name: 'Séries HD' },
-      { id: 5045, name: 'Séries 4K' },
+      { id: 5000, name: 'TV Series' },
+      { id: 5040, name: 'HD TV Series' },
+      { id: 5045, name: '4K TV Series' },
     ],
   },
   anime: {
     name: 'Sonarr (Anime)',
-    description: 'Anime - utiliser le champ "Anime Categories"',
+    description: 'Anime - use the "Anime Categories" field',
     categories: [
       { id: 5070, name: 'Anime' },
     ],
   },
   readarr: {
     name: 'Readarr',
-    description: 'Ebooks & Livres',
+    description: 'Ebooks & Books',
     categories: [
       { id: 7000, name: 'Books' },
       { id: 7010, name: 'Magazines' },
@@ -49,15 +49,15 @@ export function renderHomePage(host: string): string {
         generateAppSection(appKey, appConfig, sites, host)
       ).join('')
     : `<div class="empty-state">
-        <p>Aucun site configuré.</p>
-        <p class="hint">Ajoutez au moins une variable d'environnement :</p>
+        <p>No sites configured.</p>
+        <p class="hint">Add at least one environment variable:</p>
         <code>WAWACITY_URL</code>
         <code>ZONETELECHARGER_URL</code>
         <code>DARKIWORLD_URL</code>
       </div>`;
 
   return `<!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -362,7 +362,7 @@ export function renderHomePage(host: string): string {
   <div class="container">
     <header>
       <h1>DDL Torznab</h1>
-      <p class="subtitle">Indexeur Torznab pour Sonarr / Radarr</p>
+      <p class="subtitle">Torznab Indexer for Sonarr / Radarr</p>
       <div class="status-bar">
         <span><span class="dot ${sites.length > 0 ? 'on' : ''}"></span>${sites.length} site(s)</span>
         <span><span class="dot ${dlprotectServiceEnabled ? 'on' : ''}"></span>DL-Protect</span>
@@ -380,15 +380,15 @@ export function renderHomePage(host: string): string {
       <div class="field">
         <label class="toggle-label">
           <input type="checkbox" id="darkiworld-enabled" onchange="updateDarkiworldStatus()">
-          <span class="toggle-text">Activer l'indexeur</span>
+          <span class="toggle-text">Enable indexer</span>
         </label>
       </div>
 
       <div class="prereq-box">
-        <div class="prereq-title">Pré-requis</div>
+        <div class="prereq-title">Prerequisites</div>
         <ul class="prerequisites">
-          <li>Compte Premium sur Darkiworld</li>
-          <li>Clé API AllDebrid configurée dans .env</li>
+          <li>Premium account on Darkiworld</li>
+          <li>AllDebrid API key configured in .env</li>
         </ul>
       </div>
       
@@ -399,13 +399,13 @@ export function renderHomePage(host: string): string {
         </div>
         
         <div class="field">
-          <label>Mot de passe</label>
-          <input type="password" id="darkiworld-password" placeholder="Laisser vide pour ne pas modifier">
+          <label>Password</label>
+          <input type="password" id="darkiworld-password" placeholder="Leave empty to not modify">
         </div>
         
         <div class="field btn-row">
-          <button class="btn" id="darkiworld-save-btn" onclick="saveDarkiworldConfig()">Enregistrer</button>
-          <button class="btn btn-secondary" id="darkiworld-test-btn" onclick="testDarkiworldLogin()">Tester la connexion</button>
+          <button class="btn" id="darkiworld-save-btn" onclick="saveDarkiworldConfig()">Save</button>
+          <button class="btn btn-secondary" id="darkiworld-test-btn" onclick="testDarkiworldLogin()">Test connection</button>
           <span class="save-status" id="darkiworld-save-status"></span>
         </div>
       </div>
@@ -414,30 +414,30 @@ export function renderHomePage(host: string): string {
     <div class="card help">
       <h2>Configuration</h2>
       <ol>
-        <li>Settings → Indexers → Add (bouton +)</li>
-        <li>Choisir <strong>Torznab</strong> (Custom)</li>
-        <li>Coller l'URL de base du site choisi</li>
-        <li>Coller les catégories dans le champ correspondant</li>
-        <li>Pour l'anime, utiliser le champ <strong>Anime Categories</strong> dans Sonarr</li>
-        <li>Laisser API Key vide</li>
+        <li>Settings → Indexers → Add (+ button)</li>
+        <li>Choose <strong>Torznab</strong> (Custom)</li>
+        <li>Paste the base URL of the chosen site</li>
+        <li>Paste the categories in the corresponding field</li>
+        <li>For anime, use the <strong>Anime Categories</strong> field in Sonarr</li>
+        <li>Leave API Key empty</li>
       </ol>
     </div>
 
     <div class="card help">
-      <h2>Filtre par hébergeur</h2>
-      <p>Ajouter l'hébergeur dans le chemin de l'URL : <code>/api/{site}/{hosters}</code></p>
-      <p style="margin-top: 0.5rem;"><strong>Exemples d'URLs :</strong></p>
+      <h2>Filter by hoster</h2>
+      <p>Add the hoster in the URL path: <code>/api/{site}/{hosters}</code></p>
+      <p style="margin-top: 0.5rem;"><strong>Example URLs:</strong></p>
       <ul style="margin-left: 1.25rem; margin-top: 0.5rem; line-height: 1.75;">
-        <li><code>/api/wawacity/1fichier</code> - uniquement 1fichier</li>
-        <li><code>/api/zonetelecharger/turbobit</code> - uniquement Turbobit</li>
-        <li><code>/api/wawacity/1fichier,rapidgator</code> - 1fichier ou Rapidgator</li>
-        <li><code>/api/darkiworld-premium/1fichier</code> - uniquement 1fichier sur DarkiWorld</li>
+        <li><code>/api/wawacity/1fichier</code> - only 1fichier</li>
+        <li><code>/api/zonetelecharger/turbobit</code> - only Turbobit</li>
+        <li><code>/api/wawacity/1fichier,rapidgator</code> - 1fichier or Rapidgator</li>
+        <li><code>/api/darkiworld-premium/1fichier</code> - only 1fichier on DarkiWorld</li>
       </ul>
-      <p style="margin-top: 0.75rem;">Hébergeurs courants : <code>1fichier</code>, <code>turbobit</code>, <code>rapidgator</code>, <code>uptobox</code>, <code>nitroflare</code></p>
+      <p style="margin-top: 0.75rem;">Common hosters: <code>1fichier</code>, <code>turbobit</code>, <code>rapidgator</code>, <code>uptobox</code>, <code>nitroflare</code></p>
     </div>
 
     <footer>
-      <a href="https://github.com/Dyhlio/wastream" target="_blank">Basé sur wastream</a>
+      <a href="https://github.com/Dyhlio/wastream" target="_blank">Based on wastream</a>
     </footer>
   </div>
 
@@ -460,14 +460,14 @@ export function renderHomePage(host: string): string {
 
       try {
         document.execCommand('copy');
-        btn.textContent = 'Copié';
+        btn.textContent = 'Copied';
         btn.classList.add('copied');
         setTimeout(() => {
-          btn.textContent = 'Copier';
+          btn.textContent = 'Copy';
           btn.classList.remove('copied');
         }, 1500);
       } catch (e) {
-        btn.textContent = 'Erreur';
+        btn.textContent = 'Error';
       }
     }
 
@@ -476,7 +476,7 @@ export function renderHomePage(host: string): string {
 
     async function loadDarkiworldConfig() {
       const statusBadge = document.getElementById('darkiworld-status');
-      statusBadge.textContent = 'Chargement...';
+      statusBadge.textContent = 'Loading...';
       statusBadge.className = 'status-badge loading';
 
       try {
@@ -494,7 +494,7 @@ export function renderHomePage(host: string): string {
 
         // Handle service offline (profile not active)
         if (darkiworldConfig.reason === 'SERVICE_UNAVAILABLE' || (darkiworldConfig.error && darkiworldConfig.error.includes('ENOTFOUND'))) {
-          statusBadge.textContent = 'Non démarré';
+          statusBadge.textContent = 'Not started';
           statusBadge.className = 'status-badge disabled';
           
           document.getElementById('darkiworld-enabled').disabled = true;
@@ -507,7 +507,7 @@ export function renderHomePage(host: string): string {
             const msg = document.createElement('div');
             msg.id = 'dw-offline-msg';
             msg.style.cssText = 'color: #ef4444; font-size: 0.8125rem; margin-bottom: 1rem; margin-top: -0.5rem;';
-            msg.textContent = '⚠ Container non démarré. Relancez avec : docker compose --profile darkiworld up -d ou décommentez le profile dans le .env';
+            msg.textContent = '⚠ Container not started. Restart with: docker compose --profile darkiworld up -d or uncomment the profile in .env';
             
             // Insert after header (next sibling of h2)
             header.parentNode.insertBefore(msg, header.nextSibling);
@@ -525,7 +525,7 @@ export function renderHomePage(host: string): string {
         updateDarkiworldStatus();
       } catch (error) {
         console.error('Error loading Darkiworld config:', error);
-        statusBadge.textContent = 'Erreur: ' + (error.message || error).substring(0, 20);
+        statusBadge.textContent = 'Error: ' + (error.message || error).substring(0, 20);
         statusBadge.title = error.message || error;
         statusBadge.className = 'status-badge error';
       }
@@ -541,20 +541,20 @@ export function renderHomePage(host: string): string {
       const saveBtn = document.getElementById('darkiworld-save-btn');
 
       if (!enabled) {
-        statusBadge.textContent = 'Désactivé';
+        statusBadge.textContent = 'Disabled';
         statusBadge.className = 'status-badge disabled';
         fields.style.opacity = '0.5';
         fields.style.pointerEvents = 'none';
         saveBtn.disabled = false;
       } else if (darkiworldConfig && darkiworldConfig.authenticated) {
-        statusBadge.textContent = 'Connecté';
+        statusBadge.textContent = 'Connected';
         statusBadge.className = 'status-badge authenticated';
         fields.style.opacity = '1';
         fields.style.pointerEvents = 'auto';
         saveBtn.disabled = false;
         loginTestPassed = true;
       } else {
-        statusBadge.textContent = 'Non connecté';
+        statusBadge.textContent = 'Not connected';
         statusBadge.className = 'status-badge not-authenticated';
         fields.style.opacity = '1';
         fields.style.pointerEvents = 'auto';
@@ -570,14 +570,14 @@ export function renderHomePage(host: string): string {
 
       // If trying to enable but login test hasn't passed, show error
       if (enabled && !loginTestPassed && !(darkiworldConfig && darkiworldConfig.authenticated)) {
-        status.textContent = '✗ Veuillez tester la connexion';
+        status.textContent = '✗ Please test the connection';
         status.className = 'save-status error';
         setTimeout(() => { status.textContent = ''; }, 3000);
         return;
       }
       
       btn.disabled = true;
-      btn.textContent = 'Enregistrement...';
+      btn.textContent = 'Saving...';
       status.textContent = '';
       status.className = 'save-status';
 
@@ -599,20 +599,20 @@ export function renderHomePage(host: string): string {
         if (result.success) {
           darkiworldConfig = result;
           document.getElementById('darkiworld-password').value = '';
-          status.textContent = '✓ Enregistré';
+          status.textContent = '✓ Saved';
           status.className = 'save-status success';
           updateDarkiworldStatus();
         } else {
-          status.textContent = '✗ ' + (result.error || 'Erreur');
+          status.textContent = '✗ ' + (result.error || 'Error');
           status.className = 'save-status error';
         }
       } catch (error) {
-        status.textContent = '✗ Erreur de connexion';
+        status.textContent = '✗ Connection error';
         status.className = 'save-status error';
       }
 
       btn.disabled = false;
-      btn.textContent = 'Enregistrer';
+      btn.textContent = 'Save';
 
       setTimeout(() => {
         status.textContent = '';
@@ -626,8 +626,8 @@ export function renderHomePage(host: string): string {
       
       testBtn.disabled = true;
       saveBtn.disabled = true;
-      testBtn.textContent = 'Test en cours...';
-      status.textContent = '⏳ Connexion à DarkiWorld (Timeout de 60s)...';
+      testBtn.textContent = 'Testing...';
+      status.textContent = '⏳ Connecting to DarkiWorld (Timeout 60s)...';
       status.className = 'save-status';
 
       const email = document.getElementById('darkiworld-email').value;
@@ -655,17 +655,17 @@ export function renderHomePage(host: string): string {
           updateDarkiworldStatus();
         } else {
           loginTestPassed = false;
-          status.textContent = '✗ ' + (result.message || 'Échec du test');
+          status.textContent = '✗ ' + (result.message || 'Test failed');
           status.className = 'save-status error';
         }
       } catch (error) {
         loginTestPassed = false;
-        status.textContent = '✗ Erreur de connexion au service';
+        status.textContent = '✗ Service connection error';
         status.className = 'save-status error';
       }
 
       testBtn.disabled = false;
-      testBtn.textContent = 'Tester la connexion';
+      testBtn.textContent = 'Test connection';
       // Re-enable save button based on login status
       updateDarkiworldStatus();
 
@@ -737,10 +737,10 @@ function generateAppSection(appKey: string, appConfig: AppConfig, sites: string[
       </div>
 
       <div class="field">
-        <label>URL de base</label>
+        <label>Base URL</label>
         <div class="field-row">
           <input type="text" id="url-${appKey}" value="${defaultUrl}" readonly>
-          <button class="btn" id="btn-${appKey}" onclick="copy('url-${appKey}', 'btn-${appKey}')">Copier</button>
+          <button class="btn" id="btn-${appKey}" onclick="copy('url-${appKey}', 'btn-${appKey}')">Copy</button>
         </div>
       </div>
 
@@ -748,7 +748,7 @@ function generateAppSection(appKey: string, appConfig: AppConfig, sites: string[
         <label>Categories</label>
         <div class="field-row">
           <input type="text" id="cats-${appKey}" value="${defaultCats}" readonly>
-          <button class="btn" id="btn-cats-${appKey}" onclick="copy('cats-${appKey}', 'btn-cats-${appKey}')">Copier</button>
+          <button class="btn" id="btn-cats-${appKey}" onclick="copy('cats-${appKey}', 'btn-cats-${appKey}')">Copy</button>
         </div>
       </div>
 

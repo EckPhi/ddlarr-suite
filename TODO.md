@@ -1,18 +1,18 @@
 # TODO
 
-## Améliorations futures
+## Future Improvements
 
 ### Scrapers
-- [ ] Finaliser l'intégration de Darkiworld
-  - Scraper partiellement implémenté dans `indexer/src/scrapers/darkiworld.ts`
-  - Nécessite une clé API (`DARKIWORLD_API_KEY`)
-  - Décommenter dans `config.ts`, `scrapers/index.ts` et `docker-compose.yml`
+- [ ] Finalize Darkiworld integration
+  - Scraper partially implemented in `indexer/src/scrapers/darkiworld.ts`
+  - Requires an API key (`DARKIWORLD_API_KEY`)
+  - Uncomment in `config.ts`, `scrapers/index.ts` and `docker-compose.yml`
 
   
-### Indiquer en debut de log si le container démarre bien avec le code à jour
- - commit courant le plus recent.
- - Mettre un gros warning si ce n'est pas le cas.
+### Indicate at the beginning of logs if the container starts with up-to-date code
+ - Most recent current commit.
+ - Display a big warning if this is not the case.
 
 
-### Utiliser le cache des dl-link pour resoudre les liens en cache au niveau de l'indexeur
-- Permettra de ne pas lister des liens en 404 que l'on peut déjà tester. 
+### Use dl-link cache to resolve cached links at the indexer level
+- Will allow avoiding listing 404 links that we can already test. 
