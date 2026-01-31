@@ -149,7 +149,7 @@ export function computeInfoHash(data: Buffer): string | null {
 }
 
 /**
- * Extrait le lien DDL du champ comment d'un fichier torrent
+ * Extract the DDL link from the comment field of a torrent file
  */
 export function extractLinkFromTorrent(filePath: string): string | null {
   try {
@@ -162,7 +162,7 @@ export function extractLinkFromTorrent(filePath: string): string | null {
 }
 
 /**
- * Extrait le lien DDL du champ comment d'un buffer torrent
+ * Extract the DDL link from the comment field of a torrent buffer
  */
 export function extractLinkFromTorrentBuffer(data: Buffer): string | null {
   try {
@@ -197,7 +197,7 @@ export function extractLinkFromTorrentBuffer(data: Buffer): string | null {
 }
 
 /**
- * Extrait le nom du fichier du torrent
+ * Extract the file name from the torrent
  */
 export function extractNameFromTorrent(filePath: string): string | null {
   try {
@@ -210,7 +210,7 @@ export function extractNameFromTorrent(filePath: string): string | null {
 }
 
 /**
- * Extrait le nom du fichier d'un buffer torrent
+ * Extract the file name from a torrent buffer
  */
 export function extractNameFromTorrentBuffer(data: Buffer): string | null {
   try {
@@ -235,7 +235,7 @@ export function extractNameFromTorrentBuffer(data: Buffer): string | null {
 }
 
 /**
- * Extrait la taille du fichier d'un buffer torrent
+ * Extract the file size from a torrent buffer
  */
 export function extractSizeFromTorrentBuffer(data: Buffer): number | null {
   try {
@@ -255,8 +255,8 @@ export function extractSizeFromTorrentBuffer(data: Buffer): number | null {
 }
 
 /**
- * Extrait la liste des fichiers d'un torrent multi-fichiers
- * Pour les torrents single-file, retourne un seul fichier avec le nom du torrent
+ * Extract the list of files from a multi-file torrent
+ * For single-file torrents, returns a single file with the torrent name
  */
 export function extractFilesFromTorrentBuffer(data: Buffer): TorrentFile[] | null {
   try {
