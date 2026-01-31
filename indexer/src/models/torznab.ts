@@ -63,8 +63,8 @@ export interface SearchParams {
   tvdbid?: string;
   season?: string;
   ep?: string;
-  hoster?: string; // Liste d'hébergeurs séparés par des virgules (ex: "1fichier,rapidgator")
-  year?: string; // Année de production (ex: "2006")
+  hoster?: string; // List of hosters separated by commas (e.g., "1fichier,rapidgator")
+  year?: string; // Production year (e.g., "2006")
 }
 
 export type ContentType = 'movie' | 'series' | 'anime' | 'ebook';
