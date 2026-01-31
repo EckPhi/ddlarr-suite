@@ -80,10 +80,10 @@ def is_authenticated(sb) -> bool:
             logger.info("❌ Not authenticated - 'Connexion' (Login) button found")
             return False
         elif has_login_text:
-            logger.info("❌ Not authenticated - 'Log in to your account' text found")
+            logger.info("❌ Not authenticated - login prompt text found")
             return False
         else:
-            logger.info("✓ Authenticated - no 'Connexion' (Login) or 'Log in' text found")
+            logger.info("✓ Authenticated - no 'Connexion' (Login) or login prompt text found")
             return True
 
     except Exception as e:
