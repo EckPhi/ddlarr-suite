@@ -36,7 +36,7 @@ function categoryToName(category: TorznabCategory): string {
 
 export function buildTorznabResponse(items: TorznabItem[], siteTitle: string, baseUrl?: string): string {
   const rssItems = items.map((item) => {
-    // Si baseUrl est fourni, génère un lien vers /torrent qui créera un faux .torrent
+    // If baseUrl is provided, generate a link to /torrent which will create a fake .torrent
     const torrentLink = baseUrl
       ? `${baseUrl}/torrent?link=${encodeURIComponent(item.link)}&name=${encodeURIComponent(item.title)}&size=${item.size || 0}`
       : item.link;
@@ -55,7 +55,7 @@ export function buildTorznabResponse(items: TorznabItem[], siteTitle: string, ba
     }
     if (item.season !== undefined) {
       torznabAttrs.push({ '@_name': 'season', '@_value': String(item.season) });
-      // Pour les season packs (pas d'episode specifique), indiquer "tous les episodes" avec episode=0
+      // For season packs (no specific episode), indicate "all episodes" with episode=0
       if (item.episode === undefined) {
         torznabAttrs.push({ '@_name': 'episode', '@_value': '0' });
       } else {
@@ -69,7 +69,7 @@ export function buildTorznabResponse(items: TorznabItem[], siteTitle: string, ba
       torznabAttrs.push({ '@_name': 'year', '@_value': String(item.year) });
     }
 
-    // DDL n'a pas de seeders, mais on met une valeur pour éviter le filtrage par les *arr apps
+    // DDL has no seeders, but we put a value to avoid filtering by *arr apps
     torznabAttrs.push({ '@_name': 'seeders', '@_value': '100' });
     torznabAttrs.push({ '@_name': 'peers', '@_value': '100' });
 

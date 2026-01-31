@@ -8,7 +8,7 @@ import { config } from '../config.js';
 
 type ZTContentType = 'films' | 'series' | 'mangas' | 'ebooks';
 
-// Mapping pour le paramètre de recherche
+// Mapping for search parameter
 const CONTENT_TYPE_MAP: Record<string, ZTContentType> = {
   movie: 'films',
   series: 'series',
@@ -70,8 +70,8 @@ export class ZoneTelechargerScraper implements BaseScraper {
 
     const ztType = CONTENT_TYPE_MAP[contentType];
 
-    // Si un IMDB ID est fourni, récupère les titres depuis l'API IMDB
-    // Sinon utilise la requête originale
+    // If an IMDB ID is provided, fetch titles from the IMDB API
+    // Otherwise use the original query
     let searchQueries: string[];
     if (params.imdbid) {
       console.log(`[ZoneTelecharger] IMDB ID provided: ${params.imdbid}`);
@@ -88,19 +88,19 @@ export class ZoneTelechargerScraper implements BaseScraper {
     console.log(`[ZoneTelecharger] Search queries for "${params.q || params.imdbid}":`, searchQueries);
 
     try {
-      // Collecte tous les résultats de recherche pour toutes les queries
+      // Collect all search results for all queries
       const allSearchResults: SearchResult[] = [];
       const seenPageUrls = new Set<string>();
 
-      // Recherche pour chaque query (en parallèle)
+      // Search for each query (in parallel)
       const queryPromises = searchQueries.map(async (query) => {
         let searchTerm = query;
         if (params.season) {
           searchTerm += ` Saison ${params.season}`;
         }
 
-        // Zone-Téléchargement limit: max 36 caractères (espaces inclus)
-        // Si la limite est dépassée, la liste complète des films est renvoyée au lieu des résultats de recherche
+        // Zone-Téléchargement limit: max 36 characters (spaces included)
+        // If the limit is exceeded, the complete list of films is returned instead of search results
         if (searchTerm.length > 36) {
           searchTerm = searchTerm.substring(0, 36).trim();
           console.log(`[ZoneTelecharger] Truncated search term to 36 chars: "${searchTerm}"`);
@@ -120,7 +120,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
 
       const queryResults = await Promise.all(queryPromises);
 
-      // Déduplique par URL de page de détail
+      // Deduplicate by detail page URL
       for (const results of queryResults) {
         for (const result of results) {
           if (!seenPageUrls.has(result.pageUrl)) {
@@ -136,10 +136,10 @@ export class ZoneTelechargerScraper implements BaseScraper {
         return [];
       }
 
-      // Pour chaque résultat, visite la page et récupère les liens de téléchargement
+      // For each result, visit the page and retrieve the download links
       const allResults: ScraperResult[] = [];
 
-      // Limite à 10 résultats pour éviter trop de requêtes
+      // Limit to 10 results to avoid too many requests
       const pagesToVisit = allSearchResults.slice(0, 10);
 
       for (const result of pagesToVisit) {
@@ -173,7 +173,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
         const results = this.parseSearchResults(html, contentType, params, validationQuery);
         allResults.push(...results);
 
-        // Vérifie s'il y a une page suivante (div.navigation a[rel="next"])
+        // Check if there is a next page (div.navigation a[rel="next"])
         const $ = cheerio.load(html);
         const hasNextPage = $('div.navigation a[rel="next"]').length > 0;
 
@@ -198,12 +198,12 @@ export class ZoneTelechargerScraper implements BaseScraper {
 
     console.log(`[ZoneTelecharger] Parsing search results for ${contentType} (validating against "${validationQuery}")`);
 
-    // Parse les blocs .cover_global
+    // Parse the .cover_global blocks
     $('.cover_global').each((_, block) => {
       try {
         const $block = $(block);
 
-        // Titre et lien dans div.cover_infos_title > a
+        // Title and link in div.cover_infos_title > a
         const $titleLink = $block.find('div.cover_infos_title > a').first();
 
         if ($titleLink.length === 0) return;
@@ -214,17 +214,17 @@ export class ZoneTelechargerScraper implements BaseScraper {
 
         if (!title || !href) return;
 
-        // Langue dans div.cover_infos_title > .detail_release > span > b
+        // Language in div.cover_infos_title > .detail_release > span > b
         const langText = $block.find('div.cover_infos_title .detail_release > span > b').text().trim();
         const language = parseLanguage(langText) || parseLanguage(title);
 
-        // Extrait le nom et la saison depuis le titre (selon le type de contenu)
+        // Extract the name and season from the title (depending on content type)
         const { name, season: extractedSeason } = extractName(titleHtml, contentType);
 
         console.log(`[ZoneTelecharger] Parsed title: "${title}" -> name="${name}", season=${extractedSeason}, lang="${langText}"`);
 
-        // Vérifie que le nom correspond à la recherche (Levenshtein, adapté au type de contenu)
-        // Pour les films, on est moins strict car on vérifiera le titre original sur la page détail
+        // Check that the name matches the search (Levenshtein, adapted to content type)
+        // For movies, we're less strict because we'll check the original title on the detail page
         let needsOriginalTitleCheck = false;
         if (validationQuery && name) {
           if (!isNameMatch(validationQuery, name, contentType, '[ZoneTelecharger]')) {
@@ -237,7 +237,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
           }
         }
 
-        // Si on cherche une saison spécifique, vérifie que la saison correspond
+        // If searching for a specific season, check that the season matches
         if (params.season && contentType === 'series') {
           const seasonNum = parseInt(params.season, 10);
           if (extractedSeason !== undefined && extractedSeason !== seasonNum) {
@@ -281,7 +281,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
     const $ = cheerio.load(html);
     const results: ScraperResult[] = [];
 
-    // Extrait le titre original depuis "<strong><u>Titre original</u> :</strong> Title <br"
+    // Extract the original title from "<strong><u>Titre original</u> :</strong> Title <br"
     let originalTitle: string | undefined;
     const bodyText = $('div.maincont, div.corps').text();
     const originalTitleMatch = html.match(/<strong><u>Titre original<\/u>\s*:<\/strong>\s*([^<]+)/i);
@@ -290,7 +290,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       console.log(`[ZoneTelecharger] Found original title: ${originalTitle}`);
     }
 
-    // Si on doit vérifier le titre original et qu'il ne correspond pas, on skip
+    // If we need to check the original title and it doesn't match, skip
     const validationQuery = searchResult.validationQuery;
     if (needsOriginalTitleCheck && validationQuery) {
       const { name } = extractName(searchResult.title, contentType);
@@ -306,17 +306,17 @@ export class ZoneTelechargerScraper implements BaseScraper {
       }
     }
 
-    // Extrait la taille du fichier depuis la page
+    // Extract the file size from the page
     let fileSize: number | undefined;
 
-    // Méthode 1: "Taille du fichier : X Go"
+    // Method 1: "Taille du fichier : X Go"
     const sizeMatch1 = bodyText.match(/Taille du fichier\s*:\s*([\d.,]+)\s*(Go|Mo|Ko|GB|MB|KB)/i);
     if (sizeMatch1) {
       fileSize = parseSize(`${sizeMatch1[1]} ${sizeMatch1[2]}`);
       console.log(`[ZoneTelecharger] Found file size (method 1): ${sizeMatch1[1]} ${sizeMatch1[2]}`);
     }
 
-    // Méthode 2: "filename.mkv (X Go)" dans le font color="red"
+    // Method 2: "filename.mkv (X Go)" in the font color="red"
     if (!fileSize) {
       const redText = $('font[color="red"]').text();
       const sizeMatch2 = redText.match(/\(([\d.,]+)\s*(Go|Mo|Ko|GB|MB|KB)\)/i);
@@ -326,7 +326,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       }
     }
 
-    // Extrait qualité et langue depuis "Qualité HDLIGHT 1080p | VOSTFR"
+    // Extract quality and language from "Qualité HDLIGHT 1080p | VOSTFR"
     let pageQuality: string | undefined;
     let pageLanguage: string | undefined;
 
@@ -345,7 +345,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       }
     }
 
-    // Extrait l'IMDb ID depuis les liens ou le texte (tt1234567)
+    // Extract the IMDb ID from links or text (tt1234567)
     let imdbId: string | undefined;
     const imdbMatch = html.match(/imdb\.com\/title\/(tt\d{7,8})/i) || html.match(/\b(tt\d{7,8})\b/);
     if (imdbMatch) {
@@ -353,7 +353,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       console.log(`[ZoneTelecharger] Found IMDb ID: ${imdbId}`);
     }
 
-    // Extrait l'année de production depuis "<strong><u>Année de production</u> :</strong> 2006"
+    // Extract the production year from "<strong><u>Année de production</u> :</strong> 2006"
     let pageYear: string | undefined;
     const yearMatch = bodyText.match(/Année de production[^:]*:\s*(\d{4})/i);
     if (yearMatch) {
@@ -361,7 +361,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       console.log(`[ZoneTelecharger] Found production year: ${pageYear}`);
     }
 
-    // Filtre par année si le paramètre est fourni et l'année est trouvée dans la page
+    // Filter by year if the parameter is provided and the year is found on the page
     if (params.year && pageYear) {
       if (pageYear !== params.year) {
         console.log(`[ZoneTelecharger] Skipping "${searchResult.title}" - year ${pageYear} != ${params.year}`);
@@ -372,19 +372,19 @@ export class ZoneTelechargerScraper implements BaseScraper {
       console.log(`[ZoneTelecharger] Year filter requested (${params.year}) but no year found on page - not filtering`);
     }
 
-    // Trouve le h2 contenant "Liens De Téléchargement :" puis le div.postinfo qui suit (imbriqué dans un div)
+    // Find the h2 containing "Liens De Téléchargement :" then the following div.postinfo (nested in a div)
     const $h2 = $('h2').filter((_, el) => $(el).text().includes('Liens De Téléchargement'));
 
-    // Le div.postinfo est dans un des éléments frères suivants du h2
+    // The div.postinfo is in one of the following sibling elements of h2
     let $postinfo = $(''); // cheerio selection vide
     $h2.nextAll().each((_, el) => {
       const $el = $(el);
-      // Vérifie si c'est directement un div.postinfo
+      // Check if it's directly a div.postinfo
       if ($el.is('div.postinfo')) {
         $postinfo = $el;
         return false; // break
       }
-      // Sinon cherche un div.postinfo à l'intérieur
+      // Otherwise look for a div.postinfo inside
       const $found = $el.find('div.postinfo').first();
       if ($found.length > 0) {
         $postinfo = $found;
@@ -399,11 +399,11 @@ export class ZoneTelechargerScraper implements BaseScraper {
     if ($postinfo.length > 0) {
       let currentHoster = '';
 
-      // Parcourt tous les éléments <b> dans le bloc
+      // Loop through all <b> elements in the block
       $postinfo.find('> b').each((_, bElement) => {
         const $b = $(bElement);
 
-        // Si c'est un <b><div>Hoster</div></b>, c'est le nom de l'hébergeur
+        // If it's a <b><div>Hoster</div></b>, it's the hoster name
         const $hosterDiv = $b.find('> div');
         if ($hosterDiv.length > 0) {
           currentHoster = $hosterDiv.text().trim();
@@ -411,7 +411,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
           return; // continue
         }
 
-        // Si c'est un <b><a>Episode X</a></b>, c'est un lien de téléechargement
+        // If it's a <b><a>Episode X</a></b>, it's a download link
         const $link = $b.find('> a[rel="external nofollow"]');
         if ($link.length > 0 && currentHoster) {
           const downloadLink = $link.attr('href');
@@ -421,7 +421,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
 
           const hosterLower = currentHoster.toLowerCase();
 
-          // Filtre par hébergeur si spécifié dans les params
+          // Filter by hoster if specified in params
           if (params.hoster) {
             const allowedHosters = params.hoster.toLowerCase().split(',').map(h => h.trim());
             if (!allowedHosters.some(allowed => hosterLower.includes(allowed) || allowed.includes(hosterLower))) {
@@ -430,14 +430,14 @@ export class ZoneTelechargerScraper implements BaseScraper {
             }
           }
 
-          // Extrait le numéro d'épisode depuis le texte du lien (ex: "Episode 1", "Episode 12 FiNAL")
+          // Extract the episode number from the link text (e.g., "Episode 1", "Episode 12 FiNAL")
           let episode: number | undefined;
           const episodeMatch = linkText.match(/[ÉE]pisode\s*(\d+)/i);
           if (episodeMatch) {
             episode = parseInt(episodeMatch[1], 10);
           }
 
-          // Filtre par épisode si spécifié dans les params
+          // Filter by episode if specified in params
           if (params.ep && episode !== undefined && episode !== parseInt(params.ep, 10)) {
             return;
           }
@@ -445,16 +445,16 @@ export class ZoneTelechargerScraper implements BaseScraper {
           const quality = pageQuality || searchResult.quality || parseQuality(searchResult.title);
           const language = pageLanguage || searchResult.language || parseLanguage(searchResult.title);
 
-          // Construit le titre au format parsable par Radarr/Sonarr
-          // Films: Titre.Année.Qualité.Language.Hoster
-          // Séries: Titre.S01E05.Qualité.Language.Hoster
-          // Nettoie le nom: enlève les crochets [xxx], les tirets et leur contenu, et les espaces multiples
+          // Build the title in a format parsable by Radarr/Sonarr
+          // Movies: Title.Year.Quality.Language.Hoster
+          // Series: Title.S01E05.Quality.Language.Hoster
+          // Clean the name: remove brackets [xxx], dashes and their content, and multiple spaces
           const baseName = searchResult.title
             .split(' - ')[0]
-            .replace(/\[.*?\]/g, '')  // Enlève [HDLIGHT 1080p] etc.
-            .replace(/\s+/g, ' ')     // Normalise les espaces
+            .replace(/\[.*?\]/g, '')  // Remove [HDLIGHT 1080p] etc.
+            .replace(/\s+/g, ' ')     // Normalize spaces
             .trim()
-            .replace(/\s+/g, '.');    // Remplace les espaces par des points
+            .replace(/\s+/g, '.');    // Replace spaces with dots
           const parts: string[] = [baseName];
 
           if (contentType === 'movie' && pageYear) {
@@ -497,7 +497,7 @@ export class ZoneTelechargerScraper implements BaseScraper {
       const $ = cheerio.load(html);
       const links: string[] = [];
 
-      // Parse les blocs div.postinfo
+      // Parse the div.postinfo blocks
       $('div.postinfo b > a[rel="external nofollow"]').each((_, el) => {
         const href = $(el).attr('href');
         if (href) links.push(href);

@@ -124,7 +124,7 @@ async function processResults(results: ScraperResult[]): Promise<TorznabItem[]> 
 async function executeSearch(ctx: SearchContext): Promise<string> {
   const { action, searchParams, categoryFilter, scraper, request } = ctx;
 
-  // Si pas de query, retourne un résultat fictif (utile pour les tests de connexion Radarr/Sonarr)
+  // If no query, return a fake result (useful for Radarr/Sonarr connection tests)
   if (!searchParams.q && !searchParams.imdbid && !searchParams.tmdbid && !searchParams.tvdbid) {
     console.log(`[Torznab] Empty search query - returning dummy result (connection test)`);
     const dummyItem: TorznabItem = {
@@ -240,7 +240,7 @@ async function executeSearch(ctx: SearchContext): Promise<string> {
   const end = start + (searchParams.limit || 100);
   const paginatedItems = items.slice(start, end);
 
-  // Génère l'URL de base pour les liens torrent
+  // Generate the base URL for torrent links
   const protocol = request.headers['x-forwarded-proto'] || 'http';
   const host = request.headers['x-forwarded-host'] || request.headers.host;
   const baseUrl = `${protocol}://${host}`;
@@ -341,8 +341,8 @@ export async function torznabRoutes(app: FastifyInstance): Promise<void> {
     return { sites: getAvailableSites() };
   });
 
-  // Génère un faux fichier .torrent contenant le lien DDL
-  // Usage: /torrent?link=URL_ENCODEE&name=NOM_FICHIER&size=TAILLE
+  // Generate a fake .torrent file containing the DDL link
+  // Usage: /torrent?link=ENCODED_URL&name=FILENAME&size=SIZE
   app.get<{
     Querystring: { link: string; name?: string; size?: string };
   }>('/torrent', async (request, reply) => {
