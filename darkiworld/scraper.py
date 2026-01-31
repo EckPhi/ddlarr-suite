@@ -235,7 +235,7 @@ def scrape_darkiworld(data: dict = None) -> dict:
 
             if has_login_buttons:
                 logger.error("❌ NOT AUTHENTICATED - Login/Register buttons detected")
-                logger.error("The page shows 'S'inscrire' and 'Connexion' - cookies are invalid/expired")
+                logger.error("The page shows 'S'inscrire' (Sign up) and 'Connexion' (Login) - cookies are invalid/expired")
             else:
                 logger.info("✓ No login buttons detected - checking for username...")
 
@@ -248,7 +248,7 @@ def scrape_darkiworld(data: dict = None) -> dict:
                     const buttons = document.querySelectorAll('button');
                     for (const btn of buttons) {
                         const text = btn.innerText.trim();
-                        // Skip empty, "S'inscrire", "Connexion" buttons
+                        // Skip empty, "S'inscrire" (Sign up), "Connexion" (Login) buttons
                         if (text &&
                             text.length > 2 &&
                             !text.toLowerCase().includes('inscrire') &&
@@ -514,7 +514,7 @@ def scrape_darkiworld(data: dict = None) -> dict:
 
 def search_darkiworld(data: dict) -> dict:
     """
-    Search function for darkiworld - uses direct search URL and API
+    Search function for Darkiworld - uses direct search URL and API
     
     Args:
         data: Dictionary with 'name' (query)
@@ -707,7 +707,7 @@ def search_darkiworld(data: dict) -> dict:
             try:
                 release = {
                     'id': item['id'],
-                    'size': item['taille'] if item['taille'] else None,  # Size in bytes
+                    'size': item['taille'] if item['taille'] else None,  # Size in bytes (taille = size in French API)
                     'quality': item['qual']['qual'] if item.get('qual') else None,
                     'languages': [lang['name'] for lang in item.get('langues_compact', [])],
                     'subtitles': [sub['name'] for sub in item.get('subs_compact', [])],
@@ -715,9 +715,9 @@ def search_darkiworld(data: dict) -> dict:
                     'added': item.get('created_at', ''),
                     'host': item['host']['name'] if item.get('host') else None,
                     'views': item.get('view', 0),
-                    'full_saison': item.get('full_saison'),  # 1 = full season, 0 = single episode
+                    'full_saison': item.get('full_saison'),  # 1 = full season, 0 = single episode (saison = season in French API)
                     'episode': item.get('episode'),  # Episode number (if single episode)
-                    'saison': item.get('saison')  # Season number
+                    'saison': item.get('saison')  # Season number (saison = season in French API)
                 }
 
                 releases.append(release)

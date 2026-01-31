@@ -70,20 +70,20 @@ def load_cookies(sb, url: str, filepath: str = COOKIES_FILE) -> bool:
 
 
 def is_authenticated(sb) -> bool:
-    """Check if user is authenticated by looking for 'Connexion' text"""
+    """Check if user is authenticated by looking for 'Connexion' (Login) text"""
     try:
         body_text = sb.get_text("body").lower()
         has_login_button = 'connexion' in body_text
         has_login_text = 'Log in to your account' in body_text or 'Connectez-vous à votre compte' in body_text
 
         if has_login_button:
-            logger.info("❌ Not authenticated - 'Connexion' button found")
+            logger.info("❌ Not authenticated - 'Connexion' (Login) button found")
             return False
         elif has_login_text:
             logger.info("❌ Not authenticated - 'Log in to your account' text found")
             return False
         else:
-            logger.info("✓ Authenticated - no 'Connexion' or 'Log in' text found")
+            logger.info("✓ Authenticated - no 'Connexion' (Login) or 'Log in' text found")
             return True
 
     except Exception as e:
@@ -267,7 +267,7 @@ def login(sb, url: str, email: str, password: str) -> bool:
             logger.info("✅ Login successful!")
             return True
         else:
-            logger.error("❌ Login failed - still seeing 'Connexion' button")
+            logger.error("❌ Login failed - still seeing 'Connexion' (Login) button")
             return False
 
     except Exception as e:

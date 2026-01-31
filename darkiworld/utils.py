@@ -15,14 +15,14 @@ logger = logging.getLogger(__name__)
 def parse_relative_date(date_str: str) -> int:
     """
     Convert date strings to timestamp for sorting
-    Supports both ISO format (from API) and French relative dates
+    Supports both ISO format (from API) and French relative dates from website
     Returns timestamp (higher = more recent)
 
     Examples:
     - "2025-07-02T10:06:28.000000Z" -> ISO timestamp
-    - "l'année dernière" -> ~365 days ago
-    - "il y a 3 mois" -> ~90 days ago
-    - "il y a 5 jours" -> 5 days ago
+    - "l'année dernière" (last year) -> ~365 days ago
+    - "il y a 3 mois" (3 months ago) -> ~90 days ago
+    - "il y a 5 jours" (5 days ago) -> 5 days ago
     """
     if not date_str:
         return 0
