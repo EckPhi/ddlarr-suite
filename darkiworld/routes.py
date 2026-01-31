@@ -235,7 +235,7 @@ def test_login_route():
             return jsonify({
                 'success': False,
                 'authenticated': False,
-                'message': 'Email et mot de passe requis'
+                'message': 'Email and password required'
             }), 400
         
         # Update config with new credentials if provided
@@ -265,7 +265,7 @@ def test_login_route():
             return jsonify({
                 'success': True,
                 'authenticated': True,
-                'message': 'Connexion réussie'
+                'message': 'Connection successful'
             }), 200
         else:
             set_authenticated(False)
@@ -273,7 +273,7 @@ def test_login_route():
             return jsonify({
                 'success': False,
                 'authenticated': False,
-                'message': 'Échec de la connexion - vérifiez vos identifiants'
+                'message': 'Connection failed - check your credentials'
             }), 401
     
     except Exception as e:
@@ -282,7 +282,7 @@ def test_login_route():
         return jsonify({
             'success': False,
             'authenticated': False,
-            'message': f'Erreur: {str(e)}'
+            'message': f'Error: {str(e)}'
         }), 500
 
 
