@@ -147,7 +147,7 @@ export class DownloadStationClient implements DownloadClient {
         params.destination = config.destination;
       }
 
-      console.log(`[DownloadStation] Params for adding : ${JSON.stringify(params)}`);
+      console.log(`[DownloadStation] Params for adding: ${JSON.stringify(params)}`);
 
       // Use POST with URLSearchParams for proper encoding (especially for paths with spaces)
       const formData = new URLSearchParams();

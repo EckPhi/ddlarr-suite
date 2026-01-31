@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 
 /**
- * Extrait le lien DDL du champ comment d'un fichier torrent
+ * Extract DDL link from the comment field of a torrent file
  */
 export function extractLinkFromTorrent(filePath: string): string | null {
   try {
@@ -37,7 +37,7 @@ export function extractLinkFromTorrent(filePath: string): string | null {
 }
 
 /**
- * Extrait le nom du fichier du torrent
+ * Extract the name of the file from the torrent
  */
 export function extractNameFromTorrent(filePath: string): string | null {
   try {
