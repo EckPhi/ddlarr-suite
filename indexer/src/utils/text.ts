@@ -123,13 +123,13 @@ export function isNameMatch(searchQuery: string, foundName: string, contentType:
  * Extract the movie name from the title (remove technical info and brackets)
  */
 export function extractMovieName(titleHtml: string): string {
-  // Enlève les tags HTML
+  // Remove HTML tags
   let cleanTitle = titleHtml
-    .replace(/<[^>]+>/g, '') // Supprime les tags HTML
-    .replace(/\s+/g, ' ')    // Normalise les espaces
+    .replace(/<[^>]+>/g, '') // Remove HTML tags
+    .replace(/\s+/g, ' ')    // Normalize spaces
     .trim();
 
-  // Retire les textes entre crochets [VF], [1080p], etc.
+  // Remove bracketed text [VF], [1080p], etc.
   cleanTitle = removeBrackets(cleanTitle);
 
   // Split on " - " to separate parts (title - quality - language)
@@ -143,13 +143,13 @@ export function extractMovieName(titleHtml: string): string {
  * Extract the series name from the title (remove "Saison X" part and language)
  */
 export function extractSeriesName(titleHtml: string): { seriesName: string; season?: number } {
-  // Enlève les tags HTML
+  // Remove HTML tags
   let cleanTitle = titleHtml
-    .replace(/<[^>]+>/g, '') // Supprime les tags HTML
-    .replace(/\s+/g, ' ')    // Normalise les espaces
+    .replace(/<[^>]+>/g, '') // Remove HTML tags
+    .replace(/\s+/g, ' ')    // Normalize spaces
     .trim();
 
-  // Retire les textes entre crochets [VF], [1080p], etc.
+  // Remove bracketed text [VF], [1080p], etc.
   cleanTitle = removeBrackets(cleanTitle);
 
   // Split on " - " to separate parts

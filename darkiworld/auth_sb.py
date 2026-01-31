@@ -74,7 +74,7 @@ def is_authenticated(sb) -> bool:
     try:
         body_text = sb.get_text("body").lower()
         has_login_button = 'connexion' in body_text
-        has_login_text = 'Log in to your account' in body_text or 'Connectez-vous à votre compte' in body_text
+        has_login_text = 'Connectez-vous à votre compte' in body_text
 
         if has_login_button:
             logger.info("❌ Not authenticated - 'Connexion' (Login) button found")
