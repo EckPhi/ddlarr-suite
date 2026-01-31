@@ -1,54 +1,54 @@
 # DDL Torznab - Prowlarr Custom Indexer
 
-Cette définition Cardigann permet d'ajouter DDL Torznab comme indexeur natif dans Prowlarr.
+This Cardigann definition allows you to add DDL Torznab as a native indexer in Prowlarr.
 
-> **Note** : Cette définition n'a pas été testée. Si vous rencontrez des problèmes, utilisez l'Option 2 (Generic Torznab) qui fonctionne de manière fiable.
+> **Note**: This definition has not been tested. If you encounter problems, use Option 2 (Generic Torznab) which works reliably.
 
 ## Installation
 
-### Option 1 : Définition Custom (recommandé)
+### Option 1: Custom Definition (recommended)
 
-1. Copier le fichier `ddl-torznab.yml` dans le dossier des définitions custom de Prowlarr :
-   - **Linux** : `~/.config/Prowlarr/Definitions/Custom/`
-   - **Docker** : `/config/Definitions/Custom/`
-   - **Windows** : `%AppData%\Prowlarr\Definitions\Custom\`
+1. Copy the `ddl-torznab.yml` file to the Prowlarr custom definitions folder:
+   - **Linux**: `~/.config/Prowlarr/Definitions/Custom/`
+   - **Docker**: `/config/Definitions/Custom/`
+   - **Windows**: `%AppData%\Prowlarr\Definitions\Custom\`
 
-2. Redémarrer Prowlarr
+2. Restart Prowlarr
 
-3. Ajouter l'indexeur :
-   - Aller dans **Settings > Indexers > Add Indexer**
-   - Chercher "DDL Torznab"
-   - Configurer l'URL (par défaut : `http://ddl-torznab:3000`)
-   - Sélectionner le site source (Darkiworld, ZoneTelecharger, WawaCity)
+3. Add the indexer:
+   - Go to **Settings > Indexers > Add Indexer**
+   - Search for "DDL Torznab"
+   - Configure the URL (default: `http://ddl-torznab:3000`)
+   - Select the source site (Darkiworld, ZoneTelecharger, WawaCity)
 
-### Option 2 : Generic Torznab
+### Option 2: Generic Torznab
 
-Si la définition custom ne fonctionne pas, utiliser l'indexeur Torznab générique :
+If the custom definition doesn't work, use the generic Torznab indexer:
 
-1. Dans Prowlarr : **Settings > Indexers > Add Indexer**
-2. Sélectionner **Generic Torznab**
-3. Configurer :
-   - **Name** : DDL Torznab - Darkiworld (ou autre site)
-   - **URL** : `http://ddl-torznab:3000/api/darkiworld`
-   - **API Key** : laisser vide
-   - **Categories** : Movies, TV
+1. In Prowlarr: **Settings > Indexers > Add Indexer**
+2. Select **Generic Torznab**
+3. Configure:
+   - **Name**: DDL Torznab - Darkiworld (or other site)
+   - **URL**: `http://ddl-torznab:3000/api/darkiworld`
+   - **API Key**: leave empty
+   - **Categories**: Movies, TV
 
 ## Configuration
 
-| Paramètre | Description | Exemple |
+| Parameter | Description | Example |
 |-----------|-------------|---------|
-| DDL Torznab URL | URL du service DDL Torznab | `http://ddl-torznab:3000` |
-| Source Site | Site DDL à utiliser | `darkiworld` |
+| DDL Torznab URL | DDL Torznab service URL | `http://ddl-torznab:3000` |
+| Source Site | DDL site to use | `darkiworld` |
 
-## Sites disponibles
+## Available Sites
 
-- **Darkiworld** : Films et séries FR
-- **ZoneTelecharger** : Films et séries FR
-- **WawaCity** : Films, séries et ebooks FR
+- **Darkiworld**: French movies and TV series
+- **ZoneTelecharger**: French movies and TV series
+- **WawaCity**: French movies, TV series and ebooks
 
-## Filtrer par hébergeur
+## Filter by Hoster
 
-Pour filtrer par hébergeur spécifique, utiliser l'URL avec le chemin :
+To filter by specific hoster, use the URL with path:
 ```
 http://ddl-torznab:3000/api/darkiworld/1fichier
 http://ddl-torznab:3000/api/darkiworld/uptobox,1fichier
@@ -56,7 +56,7 @@ http://ddl-torznab:3000/api/darkiworld/uptobox,1fichier
 
 ## Docker Compose
 
-Si vous utilisez Docker Compose avec Prowlarr :
+If you're using Docker Compose with Prowlarr:
 
 ```yaml
 services:
@@ -67,8 +67,8 @@ services:
       - ./prowlarr/ddl-torznab.yml:/config/Definitions/Custom/ddl-torznab.yml:ro
 ```
 
-## Dépannage
+## Troubleshooting
 
-- **Indexeur non visible** : Redémarrer Prowlarr après avoir copié le fichier
-- **Erreur de connexion** : Vérifier que DDL Torznab est accessible depuis Prowlarr (même réseau Docker)
-- **Pas de résultats** : Tester avec l'interface web de DDL Torznab directement
+- **Indexer not visible**: Restart Prowlarr after copying the file
+- **Connection error**: Verify that DDL Torznab is accessible from Prowlarr (same Docker network)
+- **No results**: Test with the DDL Torznab web interface directly
